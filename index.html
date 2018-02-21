@@ -1,0 +1,61 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>todo list</title>
+  <meta name="description" content="todo-list">
+
+  <link rel="stylesheet" href="styles.css?v=1.0">
+
+  <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+    <body>
+    <div class="container">
+        <header class="header">
+            <input class="toggle-all arrow-down"></input>
+            <input class="new-todo" placeholder="What needs to be done?">
+        </header>      
+        <section class="main">
+            <ul class="todo">
+                <li>
+                    <div class="view">
+                        <input class="toggle" type="checkbox">
+                        <label>see the doctor</label>
+                        <button class="destroy"></button>
+                    </div>
+                </li>
+                <li>
+                    <div class="view">
+                        <input class="toggle" type="checkbox">
+                        <label>see the doctor</label>
+                        <button class="destroy"></button>
+                    </div>
+                </li>
+            </ul>
+        </section>      
+        <footer class="footer">
+                <span class="todo-count"><strong>5</strong> items left</span>
+                <ul class="filters">
+                    <li>
+                        <a href="#/" class="selected">All</a>
+                    </li>
+                    <li>
+                        <a href="#/active" class="">Active</a>
+                    </li>
+                    <li>
+                        <a href="#/completed" class="">Completed</a>
+                    </li>
+                </ul>
+                <button class="clear-completed"></button>
+            </footer>
+    </div>
+
+  <!-- <script src="js/scripts.js"></script> -->
+</body>
+</html>
