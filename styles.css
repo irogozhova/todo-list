@@ -30,6 +30,7 @@ footer, header, hgroup, menu, nav, section {
 }
 body {
 	line-height: 1.4em;
+    color: #4d4d4d;
 }
 ol, ul {
 	list-style: none;
@@ -56,12 +57,17 @@ button, input {
     outline: none;
 }
 
+/*todos: 
+1) animate font color change of list items when "getting back from checked"
+*/
+
 .container {
 	position: relative;
     min-width: 230px;
     max-width: 550px;
 	margin: 120px auto;
 	font-family: Arial;
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
 }
 
 .todo li {
@@ -74,7 +80,7 @@ button, input {
 	position: relative;
 }
 
-.view label {
+.todo li label {
 	padding: 15px 60px 15px 15px;
     margin-left: 45px;
     display: block;
@@ -82,7 +88,7 @@ button, input {
 }
 
 .destroy {
-    display: block;
+    display: none;
     position: absolute;
     right: 5px;
     top: 9px;
@@ -97,6 +103,10 @@ button, input {
 
 .destroy:after {
     content: '×';
+}
+
+.todo li:hover .destroy {
+    display: block;
 }
 
 .container .header {
@@ -123,6 +133,10 @@ button, input {
     padding: 10px 27px 10px 27px;
 }
 
+.toggle-all:checked:before {
+    color: #737373;
+}
+
 .new-todo {
 	float: left;	
 	height: 50%;
@@ -134,6 +148,11 @@ button, input {
     position: relative;
     left: 50px;
 
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #ccc;
+    opacity: 0.7; /* Firefox */
 }
 
 .toggle {
@@ -154,6 +173,17 @@ button, input {
 	top: 0;
 	left: 0;
 }
+
+.todo li.completed .toggle:after {
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#bddad5" stroke-width="3"/><path fill="#5dc2af" d="M72 25L42 71 27 56l-4 4 20 20 34-52z"/></svg>');
+}
+
+.todo li.completed label {
+    color: #d9d9d9;
+    text-decoration: line-through;
+    transition: color 0.4s;
+}
+
 
 .footer {
 	color: #777;
@@ -200,6 +230,7 @@ button, input {
 }
 
 .clear-completed {
+    display: none;
 	float: right;
     line-height: 22px;
     padding: 0;

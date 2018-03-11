@@ -17,45 +17,45 @@
 <body>
     <body>
     <div class="container">
+        
         <header class="header">
-            <input class="toggle-all" type="checkbox"></input>
-            <input class="new-todo" type="text" placeholder="What needs to be done?">
-        </header>      
+            <input class="toggle-all" id="toggle-all" type="checkbox"></input>
+            <input class="new-todo" id="new-todo" type="text" placeholder="What needs to be done?">
+        </header>    
+
         <section class="main">
-            <ul class="todo">
+            <ul class="todo" id="todo">
                 <li>
-                    <div class="view">
-                        <input class="toggle" type="checkbox">
-                        <label>see the doctor</label>
-                        <button class="destroy"></button>
-                    </div>
+                    <input class="toggle checked" type="checkbox">
+                    <label>see the doctor</label>
+                    <button class="destroy"></button>
                 </li>
                 <li>
-                    <div class="view">
-                        <input class="toggle" type="checkbox">
-                        <label>see the doctor</label>
-                        <button class="destroy"></button>
-                    </div>
+                    <input class="toggle" type="checkbox">
+                    <label>buy some apples</label>
+                    <button class="destroy"></button>
                 </li>
             </ul>
-        </section>      
+        </section>
+
         <footer class="footer">
-                <span class="todo-count"><strong>5</strong> items left</span>
-                <ul class="filters">
-                    <li>
-                        <a href="#/" class="selected">All</a>
-                    </li>
-                    <li>
-                        <a href="#/active" class="">Active</a>
-                    </li>
-                    <li>
-                        <a href="#/completed" class="">Completed</a>
-                    </li>
-                </ul>
-                <button class="clear-completed">Сlear сompleted</button>
-            </footer>
+            <span class="todo-count"><strong>5</strong> items left</span>
+            <ul class="filters">
+                <li>
+                    <a href="#/" class="selected">All</a>
+                </li>
+                <li>
+                    <a href="#/active" class="">Active</a>
+                </li>
+                <li>
+                    <a href="#/completed" class="">Completed</a>
+                </li>
+            </ul>
+            <button class="clear-completed">Сlear сompleted</button>
+        </footer>
+
     </div>
 
-  <!-- <script src="js/scripts.js"></script> -->
+  <script src="script.js"></script>
 </body>
 </html>
