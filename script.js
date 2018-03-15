@@ -90,27 +90,41 @@ for (i = 0; i < toggleBtn.length; i++) { //simplify
 }
 
 //complete all list items on toggle-all click
-
-//iterate through list items and stop when you find unchecked (parameter of checkbox) 
-toggleAll.onclick = function() {
-	var countCompleted = 0;
-	var i;
-	for (i = 0; i < everyLI.length; i++) {
-		if (everyLI[i].classList.contains("completed")) {
-			countCompleted +=1;
-			
+function allAreChecked() {
+	var allChecked = true;
+	
+	for (var i = 0; i < everyLI.length; i++) {
+		if (!everyLI[i].classList.contains("completed")) {
+			allChecked = false;
 		}	
-		
 	}
-	alert(countCompleted);
-
-	// var i;
-	// for (i = 0; i < everyLI.length; i++) {
-	// 	if(!everyLI[i].classList.contains("completed")) {
-	// 		everyLI[i].classList.add("completed");	
-	// 	}
- // 	}
+	return allChecked;
 }
+
+function uncheckAll() {
+	for (var i = 0; i < everyLI.length; i++) {
+		everyLI[i].classList.remove("completed");	
+	}
+}
+
+function checkAll() {
+	for (var i = 0; i < everyLI.length; i++) {
+		if (!everyLI[i].classList.contains("completed")) {
+			everyLI[i].classList.add("completed");
+		}
+	}
+}
+
+toggleAll.onclick = function() {
+	if (allAreChecked()) {
+		uncheckAll();
+	}
+	else {
+		checkAll();
+	}
+}
+
+
 
 
 
