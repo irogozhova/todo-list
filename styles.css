@@ -193,7 +193,7 @@ button, input {
     font-size: 15px;
 }
 
-.todo-count {
+.count-active {
 	float: left;
 	font-size: inherit;
 }

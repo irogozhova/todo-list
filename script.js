@@ -1,5 +1,7 @@
 "use strict";
 
+//double-click to edit a todo!!
+
 //Global variables
 var todoUL = document.getElementById("todo");
 var everyLI = todoUL.getElementsByTagName("li");
@@ -7,6 +9,22 @@ var todoInput = document.getElementById("new-todo");
 var toggleAll = document.getElementById("toggle-all");
 var footer = document.querySelector(".footer");
 var clearBtn = document.querySelector(".clear-completed");
+
+
+//call function which shows number of active items
+showNumberOfActive();
+//call function which hides the current list item when clicking on destroy button
+hideListItems();
+
+
+//count and display number of active items in the footer
+function showNumberOfActive() {
+	var numberOfCompleted = document.querySelectorAll('.completed').length;
+	var numberOfActive = everyLI.length - numberOfCompleted;
+	//console.log(numberOfActive);
+	document.getElementById("active").innerHTML = numberOfActive;
+}
+
 
 // Create a new list item when clicking on the "Add" button
 function newElement() {
@@ -29,11 +47,18 @@ function newElement() {
 	li.appendChild(inputLabel);
 	li.appendChild(destroyBtn);
 
-	//attach event to automatically generated remove buttons
+	//attach event to automatically generated remove buttons - simplify!!! (add function instead of this)
 	destroyBtn.onclick = function() {
-		var div = this.parentElement; //simplify
-    	div.style.display = "none";
+		var destroyedLI = this.parentElement;
+	    destroyedLI.parentNode.removeChild(destroyedLI); 
+    	if (everyLI.length == 0) {
+    		toggleAll.style.display = "none";
+    		footer.style.display = "none";
+    	}
 	}
+	// destroyBtn.onclick = function() { why just calling a function here doesn't work??
+	// 	hideListItems();
+	// }
 
 	//attach event to automatically generated toggle buttons
 	inputToggle.onclick = function() {
@@ -50,6 +75,8 @@ function newElement() {
   	}
   	document.getElementById("new-todo").value = "";
   	todoInput.focus();
+
+  	showNumberOfActive();
 }
 
 //Add new item on enter key
@@ -60,22 +87,22 @@ todoInput.addEventListener("keydown", function (e) {
 });
 
 // Hide the current list item when clicking on destroy button
-var destroy = document.getElementsByClassName("destroy");
-var i;
-for (i = 0; i < destroy.length; i++) { //simplify
-  	destroy[i].onclick = function() {
-    var div = this.parentElement;
-    div.style.display = "none";
-    div.classList.add("destroyed");
+function hideListItems() {
+	var destroy = document.getElementsByClassName("destroy");
+	var i;
+	for (i = 0; i < destroy.length; i++) { //simplify
+	  	destroy[i].onclick = function() {
+	    var destroyedLI = this.parentElement;
+	    destroyedLI.parentNode.removeChild(destroyedLI); 
+	    //remove all helper elements when there are no list items left
+	    if (everyLI.length == 0) {
+	    	toggleAll.style.display = "none";
+	    	footer.style.display = "none";
+	    }
+	  }
 
-	//remove all helper elements when there are no list items left
-    var destroyedLI = document.getElementsByClassName("destroyed");
-    var countDestroyedLI = destroyedLI.length;
-	if (countDestroyedLI == everyLI.length) {
-		toggleAll.style.display = "none";
-		footer.style.display = "none";
 	}
-  }
+	showNumberOfActive();	
 }
 
 //add class "completed" to the checked list item
