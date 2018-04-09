@@ -21,8 +21,14 @@ hideListItems();
 function showNumberOfActive() {
 	var numberOfCompleted = document.querySelectorAll('.completed').length;
 	var numberOfActive = everyLI.length - numberOfCompleted;
-	//console.log(numberOfActive);
-	document.getElementById("active").innerHTML = numberOfActive;
+	var numberOfActiveText = document.getElementById("active");
+	numberOfActiveText.innerHTML = numberOfActive;
+	if (numberOfActive == 1) {
+		document.getElementById("item-text").innerHTML = "item";
+	}
+	else {
+		document.getElementById("item-text").innerHTML = "items";
+	}
 }
 
 
@@ -55,6 +61,7 @@ function newElement() {
     		toggleAll.style.display = "none";
     		footer.style.display = "none";
     	}
+    	showNumberOfActive();
 	}
 	// destroyBtn.onclick = function() { why just calling a function here doesn't work??
 	// 	hideListItems();
@@ -64,6 +71,7 @@ function newElement() {
 	inputToggle.onclick = function() {
 		var parentLi = this.parentElement;
     	parentLi.classList.toggle("completed");
+    	showNumberOfActive();
 	}
 
 	if (inputValue === '') {
@@ -99,20 +107,20 @@ function hideListItems() {
 	    	toggleAll.style.display = "none";
 	    	footer.style.display = "none";
 	    }
+	    showNumberOfActive();
 	  }
-
 	}
-	showNumberOfActive();	
 }
 
 //add class "completed" to the checked list item
 var toggleBtn = document.getElementsByClassName("toggle");
 var i;
-for (i = 0; i < toggleBtn.length; i++) { //simplify
+for (i = 0; i < toggleBtn.length; i++) { 
   	toggleBtn[i].onclick = function() {
     var parentLi = this.parentElement;
     parentLi.classList.toggle("completed");
     clearBtn.style.display = "block";
+    showNumberOfActive();
   }
 }
 
