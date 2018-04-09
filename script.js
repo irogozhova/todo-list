@@ -1,6 +1,9 @@
 "use strict";
 
+//TODO:
+//если выполнить задачу, находясь во вкладках Active или Completed, задача из них не пропадает 
 //double-click to edit a todo!!
+
 
 //Global variables
 var todoUL = document.getElementById("todo");
@@ -109,6 +112,7 @@ function hideListItems() {
 	    	footer.style.display = "none";
 	    }
 	    showNumberOfActive();
+	    displayClearBtn ();
 	  }
 	}
 }
@@ -154,10 +158,13 @@ function checkAll() {
 toggleAll.onclick = function() {
 	if (allAreChecked()) {
 		uncheckAll();
+		clearBtn.style.display = "none";
 	}
 	else {
 		checkAll();
+		clearBtn.style.display = "block";
 	}
+	showNumberOfActive();
 }
 
 
@@ -209,9 +216,7 @@ tabCompleted.onclick = function () {
 }
 
 //clear completed button
-
 clearBtn.onclick = function () {
-	console.log("clicked");
     while (itemsCompleted.length > 0) { 
         itemsCompleted[0].parentNode.removeChild(itemsCompleted[0]); //method using arrays
     }
@@ -224,7 +229,7 @@ clearBtn.onclick = function () {
 }
 
 function displayClearBtn () {
-	if (clearBtn.style.display === "block") {
+	if ((clearBtn.style.display === "block") && (itemsCompleted.length == 0)) {
 		clearBtn.style.display = "none";
 	}
 	else {
