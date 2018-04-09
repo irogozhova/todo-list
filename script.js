@@ -160,6 +160,56 @@ toggleAll.onclick = function() {
 }
 
 
+//footer tabs
+var tabs = document.getElementsByClassName("tablink");
+var itemsCompleted = document.getElementsByClassName("completed");
+var tabAll = document.getElementById("tab-all");
+var tabActive = document.getElementById("tab-active");
+var tabCompleted = document.getElementById("tab-completed");
+
+function unselectOtherTabs () {
+	for (var i = 0; i < tabs.length; i++) {
+		tabs[i].classList.remove("selected");
+	}
+}
+
+tabAll.onclick = function() {
+	unselectOtherTabs ();
+	this.classList.add("selected");
+	for (var i = 0; i < everyLI.length; i++) {
+		everyLI[i].style.display = "block";
+	}
+}
+
+tabActive.onclick = function() {//repeating piece of code
+	unselectOtherTabs ();
+	this.classList.add("selected");
+	for (var i = 0; i < everyLI.length; i++) {
+		if(everyLI[i].classList.contains("completed")){
+			everyLI[i].style.display = "none";
+		}	
+		else {
+			everyLI[i].style.display = "block";
+		}
+	}
+}
+
+tabCompleted.onclick = function() {
+	unselectOtherTabs ();
+	this.classList.add("selected");
+	for (var i = 0; i < everyLI.length; i++) {
+		if(everyLI[i].classList.contains("completed")){
+			everyLI[i].style.display = "block";
+		}	
+		else {
+			everyLI[i].style.display = "none";
+		}
+	}
+}
+
+
+
+
 
 
 
