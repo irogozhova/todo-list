@@ -72,6 +72,7 @@ function newElement() {
 		var parentLi = this.parentElement;
     	parentLi.classList.toggle("completed");
     	showNumberOfActive();
+    	displayClearBtn ();
 	}
 
 	if (inputValue === '') {
@@ -119,8 +120,8 @@ for (i = 0; i < toggleBtn.length; i++) {
   	toggleBtn[i].onclick = function() {
     var parentLi = this.parentElement;
     parentLi.classList.toggle("completed");
-    clearBtn.style.display = "block";
     showNumberOfActive();
+    displayClearBtn ();
   }
 }
 
@@ -173,7 +174,7 @@ function unselectOtherTabs () {
 	}
 }
 
-tabAll.onclick = function() {
+tabAll.onclick = function () {
 	unselectOtherTabs ();
 	this.classList.add("selected");
 	for (var i = 0; i < everyLI.length; i++) {
@@ -181,11 +182,11 @@ tabAll.onclick = function() {
 	}
 }
 
-tabActive.onclick = function() {//repeating piece of code
+tabActive.onclick = function () {//repeating piece of code
 	unselectOtherTabs ();
 	this.classList.add("selected");
 	for (var i = 0; i < everyLI.length; i++) {
-		if(everyLI[i].classList.contains("completed")){
+		if (everyLI[i].classList.contains("completed")){
 			everyLI[i].style.display = "none";
 		}	
 		else {
@@ -194,11 +195,11 @@ tabActive.onclick = function() {//repeating piece of code
 	}
 }
 
-tabCompleted.onclick = function() {
+tabCompleted.onclick = function () {
 	unselectOtherTabs ();
 	this.classList.add("selected");
 	for (var i = 0; i < everyLI.length; i++) {
-		if(everyLI[i].classList.contains("completed")){
+		if (everyLI[i].classList.contains("completed")){
 			everyLI[i].style.display = "block";
 		}	
 		else {
@@ -207,6 +208,29 @@ tabCompleted.onclick = function() {
 	}
 }
 
+//clear completed button
+
+clearBtn.onclick = function () {
+	console.log("clicked");
+    while (itemsCompleted.length > 0) { 
+        itemsCompleted[0].parentNode.removeChild(itemsCompleted[0]); //method using arrays
+    }
+    if (itemsCompleted.length == 0) {
+    	this.style.display = "none";
+    }
+    else {
+    	this.style.display = "block";
+    }
+}
+
+function displayClearBtn () {
+	if (clearBtn.style.display === "block") {
+		clearBtn.style.display = "none";
+	}
+	else {
+		clearBtn.style.display = "block";
+	}
+}
 
 
 
