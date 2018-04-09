@@ -1,7 +1,7 @@
 "use strict";
 
 //TODO:
-//если выполнить задачу, находясь во вкладках Active или Completed, задача из них не пропадает 
+//если выполнить задачу, находясь во вкладках Completed, задача из них не пропадает 
 //double-click to edit a todo!!
 
 
@@ -76,12 +76,18 @@ function newElement() {
     	parentLi.classList.toggle("completed");
     	showNumberOfActive();
     	displayClearBtn ();
+    	if (tabActive.classList.contains("selected")) {
+    		this.parentElement.style.display = "none";
+    	}
 	}
 
 	if (inputValue === '') {
     	return;
   	} else {
     	todoUL.appendChild(li);
+    	if (tabCompleted.classList.contains("selected")) {
+    		li.style.display = "none";
+    	}
     	toggleAll.style.display = "block";
     	footer.style.display = "block";
   	}
@@ -126,6 +132,9 @@ for (i = 0; i < toggleBtn.length; i++) {
     parentLi.classList.toggle("completed");
     showNumberOfActive();
     displayClearBtn ();
+    if (tabActive.classList.contains("selected")) {
+    	this.parentElement.style.display = "none";
+    }
   }
 }
 
