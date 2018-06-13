@@ -247,7 +247,8 @@ button, input {
 }
 
 .editable {
-    border: 1px solid red;
+    border: 1px solid gray;
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
     position: absolute;
     top: 0;
     left: 50px;

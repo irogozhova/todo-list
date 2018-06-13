@@ -1,9 +1,4 @@
 "use strict";
-
-//TODO:
-//double-click to edit a todo!!
-
-
 //Global variables
 var todoUL = document.getElementById("todo");
 var everyLI = todoUL.getElementsByTagName("li");
@@ -65,9 +60,6 @@ function newElement() {
     	}
     	showNumberOfActive();
 	}
-	// destroyBtn.onclick = function() { why just calling a function here doesn't work??
-	// 	hideListItems();
-	// }
 
 	//attach event to automatically generated toggle buttons
 	inputToggle.onclick = function() {
