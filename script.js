@@ -1,7 +1,6 @@
 "use strict";
 
 //TODO:
-//если выполнить задачу, находясь во вкладках Completed, задача из них не пропадает 
 //double-click to edit a todo!!
 
 
@@ -35,8 +34,8 @@ function showNumberOfActive() {
 }
 
 
-// Create a new list item when clicking on the "Add" button
-function newElement() {
+// Create a new list item
+function newElement() { 
 	//create a bunch of elements inside li
 	var li = document.createElement("li");
 	var inputToggle = document.createElement("input");
@@ -84,7 +83,8 @@ function newElement() {
 	if (inputValue === '') {
     	return;
   	} else {
-    	todoUL.appendChild(li);
+		todoUL.appendChild(li);
+		makeEditable();
     	if (tabCompleted.classList.contains("selected")) {
     		li.style.display = "none";
     	}
@@ -107,35 +107,37 @@ todoInput.addEventListener("keydown", function (e) {
 // Hide the current list item when clicking on destroy button
 function hideListItems() {
 	var destroy = document.getElementsByClassName("destroy");
-	var i;
-	for (i = 0; i < destroy.length; i++) { //simplify
-	  	destroy[i].onclick = function() {
-	    var destroyedLI = this.parentElement;
-	    destroyedLI.parentNode.removeChild(destroyedLI); 
-	    //remove all helper elements when there are no list items left
-	    if (everyLI.length == 0) {
-	    	toggleAll.style.display = "none";
-	    	footer.style.display = "none";
-	    }
-	    showNumberOfActive();
-	    displayClearBtn ();
-	  }
+	for (var i = 0; i < destroy.length; i++) { 
+		destroy[i].onclick = function() {
+			var destroyedLI = this.parentElement;
+			destroyedLI.parentNode.removeChild(destroyedLI); 
+			//remove helper elements when there are no list items left
+			removeHelpers();
+			showNumberOfActive();
+			displayClearBtn();
+		}
+	}
+}
+
+function removeHelpers() {
+	if (everyLI.length == 0) {
+		toggleAll.style.display = "none";
+		footer.style.display = "none";
 	}
 }
 
 //add class "completed" to the checked list item
 var toggleBtn = document.getElementsByClassName("toggle");
-var i;
-for (i = 0; i < toggleBtn.length; i++) { 
+for (var i = 0; i < toggleBtn.length; i++) { 
   	toggleBtn[i].onclick = function() {
-    var parentLi = this.parentElement;
-    parentLi.classList.toggle("completed");
-    showNumberOfActive();
-    displayClearBtn ();
-    if (tabActive.classList.contains("selected")) {
-    	this.parentElement.style.display = "none";
-    }
-  }
+		var parentLi = this.parentElement;
+		parentLi.classList.toggle("completed");
+		showNumberOfActive();
+		displayClearBtn ();
+		if (tabActive.classList.contains("selected")) {
+			this.parentElement.style.display = "none";
+		}
+  	}
 }
 
 //complete all list items on toggle-all click
@@ -191,28 +193,28 @@ function unselectOtherTabs () {
 }
 
 tabAll.onclick = function () {
-	unselectOtherTabs ();
+	unselectOtherTabs();
 	this.classList.add("selected");
 	for (var i = 0; i < everyLI.length; i++) {
 		everyLI[i].style.display = "block";
 	}
 }
 
-tabActive.onclick = function () {//repeating piece of code
-	unselectOtherTabs ();
+tabActive.onclick = function () {
+	unselectOtherTabs(); //repeating piece of code
 	this.classList.add("selected");
 	for (var i = 0; i < everyLI.length; i++) {
 		if (everyLI[i].classList.contains("completed")){
 			everyLI[i].style.display = "none";
-		}	
+		}
 		else {
 			everyLI[i].style.display = "block";
-		}
+		}	
 	}
 }
 
 tabCompleted.onclick = function () {
-	unselectOtherTabs ();
+	unselectOtherTabs(); //repeating piece of code
 	this.classList.add("selected");
 	for (var i = 0; i < everyLI.length; i++) {
 		if (everyLI[i].classList.contains("completed")){
@@ -229,22 +231,62 @@ clearBtn.onclick = function () {
     while (itemsCompleted.length > 0) { 
         itemsCompleted[0].parentNode.removeChild(itemsCompleted[0]); //method using arrays
     }
-    if (itemsCompleted.length == 0) {
-    	this.style.display = "none";
-    }
-    else {
-    	this.style.display = "block";
-    }
+	displayClearBtn();
+	removeHelpers();
 }
 
-function displayClearBtn () {
-	if ((clearBtn.style.display === "block") && (itemsCompleted.length == 0)) {
+function displayClearBtn() {
+	if (itemsCompleted.length == 0) {
 		clearBtn.style.display = "none";
 	}
 	else {
 		clearBtn.style.display = "block";
 	}
 }
+
+//edit item on double click
+var labels = todoUL.getElementsByTagName("label");
+
+function makeEditable() {
+	for (var i = 0; i < labels.length; i++) { 
+		labels[i].ondblclick = function() {
+			var currentLabel = this; 
+			var editedInputText = currentLabel.innerText;
+			var inputEditable = document.createElement("input");
+			inputEditable.className = "editable";
+			inputEditable.value = editedInputText;
+			currentLabel.parentElement.appendChild(inputEditable);
+			inputEditable.focus();
+			currentLabel.parentElement.querySelector(".toggle").style.display = "none";
+			
+			function onBlurFunction() {
+				var editedText = inputEditable.value;
+				currentLabel.innerText = editedText;
+				inputEditable.style.display = "none";
+				inputEditable.parentElement.querySelector(".toggle").style.display = "block";
+			}
+			
+			inputEditable.onblur = onBlurFunction;
+
+			inputEditable.addEventListener("keydown", function (e) {
+				if (e.keyCode === 13) {  //"Enter"
+					onBlurFunction();
+				}
+			});
+		}
+	}
+}
+
+makeEditable();
+
+todoInput.addEventListener("keydown", function (e) {
+	if (e.keyCode === 13) {  //"Enter"
+    	newElement(e);
+	}
+});
+
+
+
 
 
 
