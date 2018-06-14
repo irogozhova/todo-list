@@ -6,8 +6,9 @@ var todoInput = document.getElementById("new-todo");
 var toggleAll = document.getElementById("toggle-all");
 var footer = document.querySelector(".footer");
 var clearBtn = document.querySelector(".clear-completed");
+var todos = [];
 
-
+getTodos();
 //call function which shows number of active items
 showNumberOfActive();
 //call function which hides the current list item when clicking on destroy button
@@ -27,7 +28,6 @@ function showNumberOfActive() {
 		document.getElementById("item-text").innerHTML = "items";
 	}
 }
-
 
 // Create a new list item
 function newElement() { 
@@ -66,7 +66,7 @@ function newElement() {
 		var parentLi = this.parentElement;
     	parentLi.classList.toggle("completed");
     	showNumberOfActive();
-    	displayClearBtn ();
+    	displayClearBtn();
     	if (tabActive.classList.contains("selected")) {
     		this.parentElement.style.display = "none";
     	}
@@ -76,7 +76,9 @@ function newElement() {
     	return;
   	} else {
 		todoUL.appendChild(li);
+		saveTodos();
 		makeEditable();
+		
     	if (tabCompleted.classList.contains("selected")) {
     		li.style.display = "none";
     	}
@@ -90,9 +92,9 @@ function newElement() {
 }
 
 //Add new item on enter key
-todoInput.addEventListener("keydown", function (e) {
+todoInput.addEventListener("keydown", function(e) {
 	if (e.keyCode === 13) {  //"Enter"
-    	newElement(e);
+		newElement(e);
 	}
 });
 
@@ -103,8 +105,8 @@ function hideListItems() {
 		destroy[i].onclick = function() {
 			var destroyedLI = this.parentElement;
 			destroyedLI.parentNode.removeChild(destroyedLI); 
-			//remove helper elements when there are no list items left
-			removeHelpers();
+			saveTodos();
+			removeHelpers(); //remove helper elements when there are no list items left
 			showNumberOfActive();
 			displayClearBtn();
 		}
@@ -277,6 +279,42 @@ todoInput.addEventListener("keydown", function (e) {
 	}
 });
 
+//save the label data in local storage
+function saveTodos() {
+	var labels = document.getElementsByTagName("label");
+	for (var i = 0; i < labels.length; i++) {
+		todos.push(labels[i].innerText);
+		var str = JSON.stringify(todos);
+		localStorage.setItem("todos", str);
+	}
+}
+
+//get the label data from local storage
+function getTodos() {
+	var str = localStorage.getItem("todos");
+	todos = JSON.parse(str);
+	if(!todos) {
+		todos = [];
+	}
+	todos.forEach(function(elem) {
+		console.log(elem);
+		var newLI = document.createElement("li");
+		var inputToggle = document.createElement("input");
+		inputToggle.className = "toggle";
+		var typeAttribute = document.createAttribute("type");
+		typeAttribute.value = "checkbox";
+		inputToggle.setAttributeNode(typeAttribute);
+		var inputLabel = document.createElement("label");
+		var destroyBtn = document.createElement("button");
+		destroyBtn.className = "destroy";
+		
+		inputLabel.innerHTML = elem;
+		newLI.appendChild(inputToggle);
+		newLI.appendChild(inputLabel);
+		newLI.appendChild(destroyBtn);
+		todoUL.appendChild(newLI); 
+    });
+}
 
 
 
