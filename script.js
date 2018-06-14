@@ -6,13 +6,12 @@ var todoInput = document.getElementById("new-todo");
 var toggleAll = document.getElementById("toggle-all");
 var footer = document.querySelector(".footer");
 var clearBtn = document.querySelector(".clear-completed");
-var todos = [];
 
 getTodos();
 //call function which shows number of active items
 showNumberOfActive();
 //call function which hides the current list item when clicking on destroy button
-hideListItems();
+removeListItems();
 
 
 //count and display number of active items in the footer
@@ -53,7 +52,8 @@ function newElement() {
 	//attach event to automatically generated remove buttons - simplify!!! (add function instead of this)
 	destroyBtn.onclick = function() {
 		var destroyedLI = this.parentElement;
-	    destroyedLI.parentNode.removeChild(destroyedLI); 
+		destroyedLI.parentNode.removeChild(destroyedLI); 
+		saveTodos();
     	if (everyLI.length == 0) {
     		toggleAll.style.display = "none";
     		footer.style.display = "none";
@@ -98,15 +98,15 @@ todoInput.addEventListener("keydown", function(e) {
 	}
 });
 
-// Hide the current list item when clicking on destroy button
-function hideListItems() {
+// Remove list items when clicking on destroy button
+function removeListItems() {
 	var destroy = document.getElementsByClassName("destroy");
 	for (var i = 0; i < destroy.length; i++) { 
 		destroy[i].onclick = function() {
 			var destroyedLI = this.parentElement;
 			destroyedLI.parentNode.removeChild(destroyedLI); 
 			saveTodos();
-			removeHelpers(); //remove helper elements when there are no list items left
+			removeHelpers(); 
 			showNumberOfActive();
 			displayClearBtn();
 		}
@@ -127,7 +127,7 @@ for (var i = 0; i < toggleBtn.length; i++) {
 		var parentLi = this.parentElement;
 		parentLi.classList.toggle("completed");
 		showNumberOfActive();
-		displayClearBtn ();
+		displayClearBtn();
 		if (tabActive.classList.contains("selected")) {
 			this.parentElement.style.display = "none";
 		}
@@ -227,6 +227,7 @@ clearBtn.onclick = function () {
     }
 	displayClearBtn();
 	removeHelpers();
+	saveTodos();
 }
 
 function displayClearBtn() {
@@ -282,17 +283,20 @@ todoInput.addEventListener("keydown", function (e) {
 //save the label data in local storage
 function saveTodos() {
 	var labels = document.getElementsByTagName("label");
+	var todos = [];
+
 	for (var i = 0; i < labels.length; i++) {
 		todos.push(labels[i].innerText);
-		var str = JSON.stringify(todos);
-		localStorage.setItem("todos", str);
 	}
+
+	var str = JSON.stringify(todos);
+	localStorage.setItem("todos", str);
 }
 
 //get the label data from local storage
 function getTodos() {
 	var str = localStorage.getItem("todos");
-	todos = JSON.parse(str);
+	var todos = JSON.parse(str);
 	if(!todos) {
 		todos = [];
 	}
@@ -313,6 +317,17 @@ function getTodos() {
 		newLI.appendChild(inputLabel);
 		newLI.appendChild(destroyBtn);
 		todoUL.appendChild(newLI); 
+
+		destroyBtn.onclick = function() {
+			var destroyedLI = this.parentElement;
+			destroyedLI.parentNode.removeChild(destroyedLI); 
+			saveTodos();
+			if (everyLI.length == 0) {
+				toggleAll.style.display = "none";
+				footer.style.display = "none";
+			}
+			showNumberOfActive();
+		}
     });
 }
 
