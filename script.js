@@ -6,6 +6,12 @@ var todoInput = document.getElementById("new-todo");
 var toggleAll = document.getElementById("toggle-all");
 var footer = document.querySelector(".footer");
 var clearBtn = document.querySelector(".clear-completed");
+//footer tabs
+var tabs = document.getElementsByClassName("tablink");
+var itemsCompleted = document.getElementsByClassName("completed");
+var tabAll = document.getElementById("tab-all");
+var tabActive = document.getElementById("tab-active");
+var tabCompleted = document.getElementById("tab-completed");
 
 getTodos();
 //call function which shows number of active items
@@ -28,28 +34,28 @@ function showNumberOfActive() {
 	}
 }
 
-// Create a new list item
-function newElement() { 
-	//create a bunch of elements inside li
+function newLi(newTodoText) {
 	var li = document.createElement("li");
+	/*create checkbox*/
 	var inputToggle = document.createElement("input");
 	inputToggle.className = "toggle";
 	var typeAttribute = document.createAttribute("type");
 	typeAttribute.value = "checkbox";
 	inputToggle.setAttributeNode(typeAttribute);
-	var inputLabel = document.createElement("label");
+	/*create button*/
 	var destroyBtn = document.createElement("button");
 	destroyBtn.className = "destroy";    
+	/*create label, add from input field*/
+	var inputLabel = document.createElement("label");
 
-	var inputValue = todoInput.value;
-	var inputValueText = document.createTextNode(inputValue);
+	var inputValueText = document.createTextNode(newTodoText);
 	inputLabel.appendChild(inputValueText);
 
 	li.appendChild(inputToggle);
 	li.appendChild(inputLabel);
 	li.appendChild(destroyBtn);
 
-	//attach event to automatically generated remove buttons - simplify!!! (add function instead of this)
+	//attach event to automatically generated remove buttons
 	destroyBtn.onclick = function() {
 		var destroyedLI = this.parentElement;
 		destroyedLI.parentNode.removeChild(destroyedLI); 
@@ -72,19 +78,27 @@ function newElement() {
     	}
 	}
 
-	if (inputValue === '') {
-    	return;
-  	} else {
-		todoUL.appendChild(li);
-		saveTodos();
-		makeEditable();
-		
-    	if (tabCompleted.classList.contains("selected")) {
-    		li.style.display = "none";
-    	}
-    	toggleAll.style.display = "block";
-    	footer.style.display = "block";
-  	}
+	return li;
+}
+
+// Create a new list item
+function addNewElement(newTodoText) { 
+	
+	if (newTodoText === '') {
+		return;
+	} 
+
+	var li = newLi(newTodoText);
+	todoUL.appendChild(li);
+	saveTodos();
+	makeEditable();
+	
+	if (tabCompleted.classList.contains("selected")) {
+		li.style.display = "none";
+	}
+	toggleAll.style.display = "block";
+	footer.style.display = "block";
+  	
   	document.getElementById("new-todo").value = "";
   	todoInput.focus();
 
@@ -94,7 +108,7 @@ function newElement() {
 //Add new item on enter key
 todoInput.addEventListener("keydown", function(e) {
 	if (e.keyCode === 13) {  //"Enter"
-		newElement(e);
+		addNewElement(todoInput.value);
 	}
 });
 
@@ -172,14 +186,6 @@ toggleAll.onclick = function() {
 	showNumberOfActive();
 }
 
-
-//footer tabs
-var tabs = document.getElementsByClassName("tablink");
-var itemsCompleted = document.getElementsByClassName("completed");
-var tabAll = document.getElementById("tab-all");
-var tabActive = document.getElementById("tab-active");
-var tabCompleted = document.getElementById("tab-completed");
-
 function unselectOtherTabs () {
 	for (var i = 0; i < tabs.length; i++) {
 		tabs[i].classList.remove("selected");
@@ -240,9 +246,8 @@ function displayClearBtn() {
 }
 
 //edit item on double click
-var labels = todoUL.getElementsByTagName("label");
-
 function makeEditable() {
+	var labels = todoUL.getElementsByTagName("label");
 	for (var i = 0; i < labels.length; i++) { 
 		labels[i].ondblclick = function() {
 			var currentLabel = this; 
@@ -276,7 +281,7 @@ makeEditable();
 
 todoInput.addEventListener("keydown", function (e) {
 	if (e.keyCode === 13) {  //"Enter"
-    	newElement(e);
+    	addNewElement(todoInput.value);
 	}
 });
 
@@ -293,41 +298,15 @@ function saveTodos() {
 	localStorage.setItem("todos", str);
 }
 
-//get the label data from local storage
+//get todos from local storage
 function getTodos() {
 	var str = localStorage.getItem("todos");
 	var todos = JSON.parse(str);
-	if(!todos) {
+	if (!todos) {
 		todos = [];
 	}
 	todos.forEach(function(elem) {
-		console.log(elem);
-		var newLI = document.createElement("li");
-		var inputToggle = document.createElement("input");
-		inputToggle.className = "toggle";
-		var typeAttribute = document.createAttribute("type");
-		typeAttribute.value = "checkbox";
-		inputToggle.setAttributeNode(typeAttribute);
-		var inputLabel = document.createElement("label");
-		var destroyBtn = document.createElement("button");
-		destroyBtn.className = "destroy";
-		
-		inputLabel.innerHTML = elem;
-		newLI.appendChild(inputToggle);
-		newLI.appendChild(inputLabel);
-		newLI.appendChild(destroyBtn);
-		todoUL.appendChild(newLI); 
-
-		destroyBtn.onclick = function() {
-			var destroyedLI = this.parentElement;
-			destroyedLI.parentNode.removeChild(destroyedLI); 
-			saveTodos();
-			if (everyLI.length == 0) {
-				toggleAll.style.display = "none";
-				footer.style.display = "none";
-			}
-			showNumberOfActive();
-		}
+		addNewElement(elem);
     });
 }
 
