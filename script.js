@@ -13,7 +13,10 @@ var tabAll = document.getElementById("tab-all");
 var tabActive = document.getElementById("tab-active");
 var tabCompleted = document.getElementById("tab-completed");
 
-getTodos();
+var savedLi = getTodos();
+if (!savedLi) {
+	hideHelpers();
+}
 //call function which shows number of active items
 showNumberOfActive();
 //call function which hides the current list item when clicking on destroy button
@@ -61,8 +64,7 @@ function newLi(newTodoText) {
 		destroyedLI.parentNode.removeChild(destroyedLI); 
 		saveTodos();
     	if (everyLI.length == 0) {
-    		toggleAll.style.display = "none";
-    		footer.style.display = "none";
+    		hideHelpers();
     	}
     	showNumberOfActive();
 	}
@@ -96,8 +98,7 @@ function addNewElement(newTodoText) {
 	if (tabCompleted.classList.contains("selected")) {
 		li.style.display = "none";
 	}
-	toggleAll.style.display = "block";
-	footer.style.display = "block";
+	showHelpers();
   	
   	document.getElementById("new-todo").value = "";
   	todoInput.focus();
@@ -120,17 +121,12 @@ function removeListItems() {
 			var destroyedLI = this.parentElement;
 			destroyedLI.parentNode.removeChild(destroyedLI); 
 			saveTodos();
-			removeHelpers(); 
+			if (everyLI.length == 0) {
+				hideHelpers();
+			}
 			showNumberOfActive();
 			displayClearBtn();
 		}
-	}
-}
-
-function removeHelpers() {
-	if (everyLI.length == 0) {
-		toggleAll.style.display = "none";
-		footer.style.display = "none";
 	}
 }
 
@@ -186,17 +182,30 @@ toggleAll.onclick = function() {
 	showNumberOfActive();
 }
 
-function unselectOtherTabs () {
+function unselectOtherTabs() {
 	for (var i = 0; i < tabs.length; i++) {
 		tabs[i].classList.remove("selected");
 	}
 }
 
-tabAll.onclick = function () {
+tabAll.onclick = function() {
 	unselectOtherTabs();
 	this.classList.add("selected");
 	for (var i = 0; i < everyLI.length; i++) {
 		everyLI[i].style.display = "block";
+	}
+}
+
+function selectTab(tab) {
+	unselectOtherTabs(); 
+	tab.classList.add("selected");
+	for (var i = 0; i < everyLI.length; i++) {
+		if (everyLI[i].classList.contains("completed")){
+			everyLI[i].style.display = "block";
+		}	
+		else {
+			everyLI[i].style.display = "none";
+		}
 	}
 }
 
@@ -226,13 +235,16 @@ tabCompleted.onclick = function () {
 	}
 }
 
+
 //clear completed button
 clearBtn.onclick = function () {
     while (itemsCompleted.length > 0) { 
         itemsCompleted[0].parentNode.removeChild(itemsCompleted[0]); //method using arrays
     }
 	displayClearBtn();
-	removeHelpers();
+	if (everyLI.length == 0) {
+		hideHelpers();
+	}
 	saveTodos();
 }
 
@@ -243,6 +255,16 @@ function displayClearBtn() {
 	else {
 		clearBtn.style.display = "block";
 	}
+}
+
+function hideHelpers() {
+	toggleAll.style.display = "none";
+	footer.style.display = "none";
+}
+
+function showHelpers() {
+	toggleAll.style.display = "block";
+	footer.style.display = "block";
 }
 
 //edit item on double click
@@ -307,7 +329,8 @@ function getTodos() {
 	}
 	todos.forEach(function(elem) {
 		addNewElement(elem);
-    });
+	});
+	return todos;
 }
 
 
