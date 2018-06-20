@@ -1,17 +1,17 @@
 "use strict";
 //Global variables
+var todoInput = document.getElementById("new-todo"); 
 var todoUL = document.getElementById("todo");
 var listItems = todoUL.getElementsByTagName("li");
-var todoInput = document.getElementById("new-todo"); 
 var toggleAll = document.getElementById("toggle-all");
 var footer = document.querySelector(".footer");
-var clearBtn = document.querySelector(".clear-completed");
 //footer tabs
 var tabs = document.getElementsByClassName("tablink");
 var itemsCompleted = document.getElementsByClassName("completed");
 var tabAll = document.getElementById("tab-all");
 var tabActive = document.getElementById("tab-active");
 var tabCompleted = document.getElementById("tab-completed");
+var clearBtn = document.querySelector(".clear-completed");
 
 var savedLi = getTodos();
 if (!savedLi) {
@@ -101,7 +101,7 @@ function addNewElement(newTodoText) {
 	}
 	showHelpers();
   	
-  	document.getElementById("new-todo").value = "";
+  	todoInput.value = "";
   	todoInput.focus();
 
   	showNumberOfActive();
