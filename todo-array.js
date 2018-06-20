@@ -1,5 +1,4 @@
 //TODO!!
-//remove items from localstorage on destroy button click
 //store and retrieve checkbox state in localstorage
 
 var todoInput = document.getElementById("new-todo");
@@ -20,7 +19,7 @@ else {
 }
 
 handleCheckboxCheck();
-removeListItems();
+initRemoveButtons();
 
 //adds new todo on enter
 todoInput.addEventListener("keydown", function(e) {
@@ -40,7 +39,7 @@ function out() {
     }
     todoUL.innerHTML = out;
     handleCheckboxCheck();
-    removeListItems();
+    initRemoveButtons();
 }
 
 //takes value of todo input, adds it to array and saves in localstorage
@@ -57,18 +56,24 @@ function addNewLi() {
     var i = todoList.length;
     todoList[i] = temp;
     out();
-    localStorage.setItem('todo', JSON.stringify(todoList));
+    saveToStorage();
+}
+
+function saveToStorage() {
+	localStorage.setItem('todo', JSON.stringify(todoList));
 }
 
 // Remove list items when clicking on destroy button
-function removeListItems() {
+function initRemoveButtons() {
 	var destroy = document.getElementsByClassName("destroy");
 	for (var i = 0; i < destroy.length; i++) { 
 		destroy[i].onclick = function() {
 			var destroyedLI = this.parentElement;
-            destroyedLI.parentNode.removeChild(destroyedLI); 
-            
-            //localStorage.removeItem('image');
+			var destroyedLiIndex = Array.from(destroyedLI.parentNode.children).indexOf(destroyedLI);
+			todoList.splice(destroyedLiIndex, 1);
+			saveToStorage();
+
+			destroyedLI.parentNode.removeChild(destroyedLI); 
 		}
 	}
 }
