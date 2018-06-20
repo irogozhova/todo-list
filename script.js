@@ -1,7 +1,7 @@
 "use strict";
 //Global variables
 var todoUL = document.getElementById("todo");
-var everyLI = todoUL.getElementsByTagName("li");
+var listItems = todoUL.getElementsByTagName("li");
 var todoInput = document.getElementById("new-todo"); 
 var toggleAll = document.getElementById("toggle-all");
 var footer = document.querySelector(".footer");
@@ -21,12 +21,13 @@ if (!savedLi) {
 showNumberOfActive();
 //call function which hides the current list item when clicking on destroy button
 removeListItems();
+makeEditable();
 
 
 //count and display number of active items in the footer
 function showNumberOfActive() {
 	var numberOfCompleted = document.querySelectorAll('.completed').length;
-	var numberOfActive = everyLI.length - numberOfCompleted;
+	var numberOfActive = listItems.length - numberOfCompleted;
 	var numberOfActiveText = document.getElementById("active");
 	numberOfActiveText.innerHTML = numberOfActive;
 	if (numberOfActive == 1) {
@@ -63,7 +64,7 @@ function newLi(newTodoText) {
 		var destroyedLI = this.parentElement;
 		destroyedLI.parentNode.removeChild(destroyedLI); 
 		saveTodos();
-    	if (everyLI.length == 0) {
+    	if (listItems.length == 0) {
     		hideHelpers();
     	}
     	showNumberOfActive();
@@ -121,7 +122,7 @@ function removeListItems() {
 			var destroyedLI = this.parentElement;
 			destroyedLI.parentNode.removeChild(destroyedLI); 
 			saveTodos();
-			if (everyLI.length == 0) {
+			if (listItems.length == 0) {
 				hideHelpers();
 			}
 			showNumberOfActive();
@@ -148,8 +149,8 @@ for (var i = 0; i < toggleBtn.length; i++) {
 function allAreChecked() {
 	var allChecked = true;
 	
-	for (var i = 0; i < everyLI.length; i++) {
-		if (!everyLI[i].classList.contains("completed")) {
+	for (var i = 0; i < listItems.length; i++) {
+		if (!listItems[i].classList.contains("completed")) {
 			allChecked = false;
 		}	
 	}
@@ -157,15 +158,15 @@ function allAreChecked() {
 }
 
 function uncheckAll() {
-	for (var i = 0; i < everyLI.length; i++) {
-		everyLI[i].classList.remove("completed");	
+	for (var i = 0; i < listItems.length; i++) {
+		listItems[i].classList.remove("completed");	
 	}
 }
 
 function checkAll() {
-	for (var i = 0; i < everyLI.length; i++) {
-		if (!everyLI[i].classList.contains("completed")) {
-			everyLI[i].classList.add("completed");
+	for (var i = 0; i < listItems.length; i++) {
+		if (!listItems[i].classList.contains("completed")) {
+			listItems[i].classList.add("completed");
 		}
 	}
 }
@@ -182,67 +183,53 @@ toggleAll.onclick = function() {
 	showNumberOfActive();
 }
 
-function unselectOtherTabs() {
+/*footer tabs*/
+
+function unselectOtherTabs(tab) {
 	for (var i = 0; i < tabs.length; i++) {
 		tabs[i].classList.remove("selected");
 	}
+	tab.classList.add("selected");
 }
 
 tabAll.onclick = function() {
-	unselectOtherTabs();
-	this.classList.add("selected");
-	for (var i = 0; i < everyLI.length; i++) {
-		everyLI[i].style.display = "block";
+	unselectOtherTabs(tabAll);
+	for (var i = 0; i < listItems.length; i++) {
+		listItems[i].style.display = "block";
 	}
 }
 
-function selectTab(tab) {
-	unselectOtherTabs(); 
-	tab.classList.add("selected");
-	for (var i = 0; i < everyLI.length; i++) {
-		if (everyLI[i].classList.contains("completed")){
-			everyLI[i].style.display = "block";
+tabActive.onclick = function() {
+	unselectOtherTabs(tabActive); 
+	for (var i = 0; i < listItems.length; i++) {
+		if (listItems[i].classList.contains("completed")){
+			listItems[i].style.display = "none";
 		}	
 		else {
-			everyLI[i].style.display = "none";
+			listItems[i].style.display = "block";
 		}
 	}
 }
 
-tabActive.onclick = function () {
-	unselectOtherTabs(); //repeating piece of code
-	this.classList.add("selected");
-	for (var i = 0; i < everyLI.length; i++) {
-		if (everyLI[i].classList.contains("completed")){
-			everyLI[i].style.display = "none";
-		}
-		else {
-			everyLI[i].style.display = "block";
-		}	
-	}
-}
-
-tabCompleted.onclick = function () {
-	unselectOtherTabs(); //repeating piece of code
-	this.classList.add("selected");
-	for (var i = 0; i < everyLI.length; i++) {
-		if (everyLI[i].classList.contains("completed")){
-			everyLI[i].style.display = "block";
+tabCompleted.onclick = function() {
+	unselectOtherTabs(tabCompleted); 
+	for (var i = 0; i < listItems.length; i++) {
+		if (!listItems[i].classList.contains("completed")){
+			listItems[i].style.display = "none";
 		}	
 		else {
-			everyLI[i].style.display = "none";
+			listItems[i].style.display = "block";
 		}
 	}
 }
-
 
 //clear completed button
 clearBtn.onclick = function () {
     while (itemsCompleted.length > 0) { 
-        itemsCompleted[0].parentNode.removeChild(itemsCompleted[0]); //method using arrays
+        itemsCompleted[0].parentNode.removeChild(itemsCompleted[0]); // using arrays
     }
 	displayClearBtn();
-	if (everyLI.length == 0) {
+	if (listItems.length == 0) {
 		hideHelpers();
 	}
 	saveTodos();
@@ -286,6 +273,7 @@ function makeEditable() {
 				currentLabel.innerText = editedText;
 				inputEditable.style.display = "none";
 				inputEditable.parentElement.querySelector(".toggle").style.display = "block";
+				saveTodos();
 			}
 			
 			inputEditable.onblur = onBlurFunction;
@@ -293,13 +281,12 @@ function makeEditable() {
 			inputEditable.addEventListener("keydown", function (e) {
 				if (e.keyCode === 13) {  //"Enter"
 					onBlurFunction();
+					saveTodos();
 				}
 			});
 		}
 	}
 }
-
-makeEditable();
 
 todoInput.addEventListener("keydown", function (e) {
 	if (e.keyCode === 13) {  //"Enter"
