@@ -1,4 +1,5 @@
 //TODO!!
+//remove completed elements from local storage when clicking on "clear completed"
 //store and retrieve checkbox state in localstorage
 
 var todoInput = document.getElementById("new-todo");
@@ -8,6 +9,10 @@ var listItems = todoUL.getElementsByTagName("li");
 var itemsCompleted = document.getElementsByClassName("completed");
 var toggleAll = document.getElementById("toggle-all");
 var footer = document.querySelector(".footer");
+var tabs = document.getElementsByClassName("tablink");
+var tabAll = document.getElementById("tab-all");
+var tabActive = document.getElementById("tab-active");
+var tabCompleted = document.getElementById("tab-completed");
 var clearBtn = document.querySelector(".clear-completed");
 
 if (localStorage.getItem('todo') != undefined) {
@@ -15,10 +20,11 @@ if (localStorage.getItem('todo') != undefined) {
     out();
 }
 else {
-    hideHelpers();
+    hideHelpers(); //doesn't work
 }
 
 handleCheckboxCheck();
+updateNumberOfActive();
 initRemoveButtons();
 
 //adds new todo on enter
@@ -26,7 +32,8 @@ todoInput.addEventListener("keydown", function(e) {
 	if (e.keyCode === 13) {  
         addNewLi();
         todoInput.value = "";
-        todoInput.focus();
+		todoInput.focus();
+		updateNumberOfActive();
         showHelpers();
 	}
 });
@@ -72,22 +79,14 @@ function initRemoveButtons() {
 			var destroyedLiIndex = Array.from(destroyedLI.parentNode.children).indexOf(destroyedLI);
 			todoList.splice(destroyedLiIndex, 1);
 			saveToStorage();
-
 			destroyedLI.parentNode.removeChild(destroyedLI); 
+
+			updateNumberOfActive();
+			if (listItems.length == 0) {
+				hideHelpers();
+			}
 		}
 	}
-}
-
-//hides toggle all button and footer when no items are left
-function hideHelpers() {
-	toggleAll.style.display = "none";
-	footer.style.display = "none";
-}
-
-//shows toggle all button and footer
-function showHelpers() {
-	toggleAll.style.display = "block";
-	footer.style.display = "block";
 }
 
 //add class "completed" to the checked list item
@@ -98,12 +97,26 @@ function handleCheckboxCheck() {
             var parentLi = this.parentElement;
             parentLi.classList.toggle("completed");
             displayClearBtn();
-            // showNumberOfActive();
+            updateNumberOfActive();
             // if (tabActive.classList.contains("selected")) {
             //     this.parentElement.style.display = "none";
             // }
           }
     }
+}
+
+//count and display number of active items in the footer
+function updateNumberOfActive() {
+	var numberOfCompleted = document.querySelectorAll('.completed').length;
+	var numberOfActive = listItems.length - numberOfCompleted;
+	var numberOfActiveText = document.getElementById("active");
+	numberOfActiveText.innerHTML = numberOfActive;
+	if (numberOfActive == 1) {
+		document.getElementById("item-text").innerHTML = "item";
+	}
+	else {
+		document.getElementById("item-text").innerHTML = "items";
+	}
 }
 
 function displayClearBtn() {
@@ -150,5 +163,67 @@ toggleAll.onclick = function() {
 		checkAll();
 		clearBtn.style.display = "block";
 	}
-	//showNumberOfActive();
+	updateNumberOfActive();
+}
+
+/*footer tabs*/
+function unselectOtherTabs(tab) {
+	for (var i = 0; i < tabs.length; i++) {
+		tabs[i].classList.remove("selected");
+	}
+	tab.classList.add("selected");
+}
+
+tabAll.onclick = function() {
+	unselectOtherTabs(tabAll);
+	for (var i = 0; i < listItems.length; i++) {
+		listItems[i].style.display = "block";
+	}
+}
+
+tabActive.onclick = function() {
+	unselectOtherTabs(tabActive); 
+	for (var i = 0; i < listItems.length; i++) {
+		if (listItems[i].classList.contains("completed")){
+			listItems[i].style.display = "none";
+		}	
+		else {
+			listItems[i].style.display = "block";
+		}
+	}
+}
+
+tabCompleted.onclick = function() {
+	unselectOtherTabs(tabCompleted); 
+	for (var i = 0; i < listItems.length; i++) {
+		if (!listItems[i].classList.contains("completed")){
+			listItems[i].style.display = "none";
+		}	
+		else {
+			listItems[i].style.display = "block";
+		}
+	}
+}
+
+//clear completed button
+clearBtn.onclick = function () {
+    while (itemsCompleted.length > 0) { 
+        itemsCompleted[0].parentNode.removeChild(itemsCompleted[0]); // using arrays
+    }
+	displayClearBtn();
+	if (listItems.length == 0) {
+		hideHelpers();
+	}
+}
+
+//hides toggle all button and footer when no items are left
+function hideHelpers() {
+	toggleAll.style.display = "none";
+	footer.style.display = "none";
+}
+
+//shows toggle all button and footer
+function showHelpers() {
+	toggleAll.style.display = "block";
+	footer.style.display = "block";
 }
