@@ -1,5 +1,6 @@
 //TODO!!
-//remove completed elements from local storage when clicking on "clear completed"
+//when adding items checked checkboxes disappear - remember the checked state
+//save edited on double click items to storage
 //store and retrieve checkbox state in localstorage
 
 var todoInput = document.getElementById("new-todo");
@@ -17,15 +18,14 @@ var clearBtn = document.querySelector(".clear-completed");
 
 if (localStorage.getItem('todo') != undefined) {
     todoList = JSON.parse(localStorage.getItem('todo'));
-    out();
-}
-else {
-    hideHelpers(); //doesn't work
+	out();
 }
 
+showHelpers();
 handleCheckboxCheck();
 updateNumberOfActive();
 initRemoveButtons();
+makeEditable();
 
 //adds new todo on enter
 todoInput.addEventListener("keydown", function(e) {
@@ -34,7 +34,7 @@ todoInput.addEventListener("keydown", function(e) {
         todoInput.value = "";
 		todoInput.focus();
 		updateNumberOfActive();
-        showHelpers();
+		showHelpers();
 	}
 });
 
@@ -46,7 +46,7 @@ function out() {
     }
     todoUL.innerHTML = out;
     handleCheckboxCheck();
-    initRemoveButtons();
+	initRemoveButtons();
 }
 
 //takes value of todo input, adds it to array and saves in localstorage
@@ -63,7 +63,7 @@ function addNewLi() {
     var i = todoList.length;
     todoList[i] = temp;
     out();
-    saveToStorage();
+	saveToStorage();
 }
 
 function saveToStorage() {
@@ -82,9 +82,7 @@ function initRemoveButtons() {
 			destroyedLI.parentNode.removeChild(destroyedLI); 
 
 			updateNumberOfActive();
-			if (listItems.length == 0) {
-				hideHelpers();
-			}
+			showHelpers();
 		}
 	}
 }
@@ -98,9 +96,6 @@ function handleCheckboxCheck() {
             parentLi.classList.toggle("completed");
             displayClearBtn();
             updateNumberOfActive();
-            // if (tabActive.classList.contains("selected")) {
-            //     this.parentElement.style.display = "none";
-            // }
           }
     }
 }
@@ -116,15 +111,6 @@ function updateNumberOfActive() {
 	}
 	else {
 		document.getElementById("item-text").innerHTML = "items";
-	}
-}
-
-function displayClearBtn() {
-	if (itemsCompleted.length == 0) {
-		clearBtn.style.display = "none";
-	}
-	else {
-		clearBtn.style.display = "block";
 	}
 }
 
@@ -205,25 +191,78 @@ tabCompleted.onclick = function() {
 	}
 }
 
-//clear completed button
-clearBtn.onclick = function () {
-    while (itemsCompleted.length > 0) { 
-        itemsCompleted[0].parentNode.removeChild(itemsCompleted[0]); // using arrays
-    }
-	displayClearBtn();
-	if (listItems.length == 0) {
-		hideHelpers();
+function displayClearBtn() {
+	if (itemsCompleted.length == 0) {
+		clearBtn.style.display = "none";
+	}
+	else {
+		clearBtn.style.display = "block";
 	}
 }
 
-//hides toggle all button and footer when no items are left
-function hideHelpers() {
-	toggleAll.style.display = "none";
-	footer.style.display = "none";
+//clear completed button
+clearBtn.onclick = function() {
+	for (var i = 0; i < itemsCompleted.length; i++) {
+		while (itemsCompleted.length > 0) {
+			var destroyedLiIndex = Array.from(itemsCompleted[i].parentNode.children).indexOf(itemsCompleted[i]);
+			todoList.splice(destroyedLiIndex, 1);
+			saveToStorage();
+			itemsCompleted[i].parentNode.removeChild(itemsCompleted[i]); 
+		}
+	}
+	displayClearBtn();
+	showHelpers();
 }
 
-//shows toggle all button and footer
-function showHelpers() {
-	toggleAll.style.display = "block";
-	footer.style.display = "block";
+//edit item on double click
+function makeEditable() {
+	var labels = todoUL.getElementsByTagName("label");
+	for (var i = 0; i < labels.length; i++) { 
+		labels[i].ondblclick = function() {
+			var currentLabel = this; 
+			var editedInputText = currentLabel.innerText;
+			var inputEditable = document.createElement("input");
+			inputEditable.className = "editable";
+			inputEditable.value = editedInputText;
+			currentLabel.parentElement.appendChild(inputEditable);
+			inputEditable.focus();
+			currentLabel.parentElement.querySelector(".toggle").style.display = "none";
+			
+			function onBlurFunction() {
+				var editedText = inputEditable.value;
+				currentLabel.innerText = editedText;
+				inputEditable.style.display = "none";
+				inputEditable.parentElement.querySelector(".toggle").style.display = "block";
+				saveToStorage();
+			}
+			
+			inputEditable.onblur = onBlurFunction;
+
+			inputEditable.addEventListener("keydown", function (e) {
+				if (e.keyCode === 13) {  //"Enter"
+					onBlurFunction();
+					saveToStorage();
+				}
+			});
+		}
+	}
 }
+
+todoInput.addEventListener("keydown", function (e) {
+	if (e.keyCode === 13) {  //"Enter"
+    	addNewElement(todoInput.value);
+	}
+});
+
+//hides toggle all button and footer when no items are left
+function showHelpers() {
+	if (listItems.length == 0) {
+		toggleAll.style.display = "none";
+		footer.style.display = "none";
+	}
+	else {
+		toggleAll.style.display = "block";
+		footer.style.display = "block";
+	}
+}
+
