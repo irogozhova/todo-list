@@ -1,7 +1,8 @@
 //TODO!!
 //when adding items checked checkboxes disappear - remember the checked state
-//save edited on double click items to storage
+//inputEditable.value - not updating in storage //save edited on double click items to storage
 //store and retrieve checkbox state in localstorage
+
 
 var todoInput = document.getElementById("new-todo");
 var todoUL = document.getElementById("todo");
@@ -18,7 +19,7 @@ var clearBtn = document.querySelector(".clear-completed");
 
 if (localStorage.getItem('todo') != undefined) {
     todoList = JSON.parse(localStorage.getItem('todo'));
-	out();
+	updateMarkup();
 }
 
 showHelpers();
@@ -39,15 +40,23 @@ todoInput.addEventListener("keydown", function(e) {
 });
 
 //creates new li markup
-function out() {
+function updateMarkup() {
     var out = '';
-    for (var key in todoList) {
-        out += '<li><input type="checkbox" class="toggle"><label>' + todoList[key].todo + '</label><button class="destroy"></li>';
+
+	for (var item of todoList) {
+		out += '<li' + (item.isChecked ? ' class="completed"' : '') + '><input type="checkbox" class="toggle"><label>' + item.text + '</label><button class="destroy"></li>';
     }
-    todoUL.innerHTML = out;
+	todoUL.innerHTML = out;
+
+	var anyAreChecked = todoList.some(item => item.isChecked); //take only true/false values and check if any one is true
+	clearBtn.style.display = anyAreChecked ? "block" : "none";
+
     handleCheckboxCheck();
 	initRemoveButtons();
+	makeEditable();
 }
+
+
 
 //takes value of todo input, adds it to array and saves in localstorage
 function addNewLi() {
@@ -57,16 +66,14 @@ function addNewLi() {
         return;
     }
 
-    var temp = {};
-    temp.todo = todoText;
-    temp.check = false;
-    var i = todoList.length;
-    todoList[i] = temp;
-    out();
+	var newItem = {text: todoText, isChecked: false};	
+	todoList.push(newItem);
+	updateMarkup();
 	saveToStorage();
 }
 
 function saveToStorage() {
+	console.log(todoList);
 	localStorage.setItem('todo', JSON.stringify(todoList));
 }
 
@@ -78,8 +85,8 @@ function initRemoveButtons() {
 			var destroyedLI = this.parentElement;
 			var destroyedLiIndex = Array.from(destroyedLI.parentNode.children).indexOf(destroyedLI);
 			todoList.splice(destroyedLiIndex, 1);
+			updateMarkup();
 			saveToStorage();
-			destroyedLI.parentNode.removeChild(destroyedLI); 
 
 			updateNumberOfActive();
 			showHelpers();
@@ -92,9 +99,11 @@ function handleCheckboxCheck() {
     var toggleBtn = document.getElementsByClassName("toggle");
     for (var i = 0; i < toggleBtn.length; i++) { 
           toggleBtn[i].onclick = function() {
-            var parentLi = this.parentElement;
-            parentLi.classList.toggle("completed");
-            displayClearBtn();
+            var li = this.parentElement;
+			var liIndex = Array.from(li.parentNode.children).indexOf(li);
+			todoList[liIndex].isChecked = !todoList[liIndex].isChecked;
+			updateMarkup();
+			saveToStorage();
             updateNumberOfActive();
           }
     }
@@ -191,26 +200,16 @@ tabCompleted.onclick = function() {
 	}
 }
 
-function displayClearBtn() {
-	if (itemsCompleted.length == 0) {
-		clearBtn.style.display = "none";
-	}
-	else {
-		clearBtn.style.display = "block";
-	}
-}
-
 //clear completed button
 clearBtn.onclick = function() {
 	for (var i = 0; i < itemsCompleted.length; i++) {
 		while (itemsCompleted.length > 0) {
 			var destroyedLiIndex = Array.from(itemsCompleted[i].parentNode.children).indexOf(itemsCompleted[i]);
 			todoList.splice(destroyedLiIndex, 1);
+			updateMarkup();
 			saveToStorage();
-			itemsCompleted[i].parentNode.removeChild(itemsCompleted[i]); 
 		}
 	}
-	displayClearBtn();
 	showHelpers();
 }
 
@@ -231,28 +230,27 @@ function makeEditable() {
 			function onBlurFunction() {
 				var editedText = inputEditable.value;
 				currentLabel.innerText = editedText;
+				
+				var currentlyChangedLI = currentLabel.parentNode;
+				var currentlyChangedLiIndex = Array.from(currentlyChangedLI.parentNode.children).indexOf(currentlyChangedLI);
+
+				todoList[currentlyChangedLiIndex] = editedText;
+				saveToStorage();
+				
 				inputEditable.style.display = "none";
 				inputEditable.parentElement.querySelector(".toggle").style.display = "block";
-				saveToStorage();
 			}
 			
 			inputEditable.onblur = onBlurFunction;
 
 			inputEditable.addEventListener("keydown", function (e) {
-				if (e.keyCode === 13) {  //"Enter"
+				if (e.keyCode === 13) {  
 					onBlurFunction();
-					saveToStorage();
 				}
 			});
 		}
 	}
 }
-
-todoInput.addEventListener("keydown", function (e) {
-	if (e.keyCode === 13) {  //"Enter"
-    	addNewElement(todoInput.value);
-	}
-});
 
 //hides toggle all button and footer when no items are left
 function showHelpers() {
