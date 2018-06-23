@@ -1,6 +1,3 @@
-//TODO!!
-//inputEditable.value - not updating in storage //save edited on double click items to storage
-
 var todoInput = document.getElementById("new-todo");
 var todoUL = document.getElementById("todo");
 var todoList = [];
@@ -28,7 +25,8 @@ makeEditable();
 //adds new todo on enter
 todoInput.addEventListener("keydown", function(e) {
 	if (e.keyCode === 13) {  
-        addNewLi();
+		addNewLi();
+		
         todoInput.value = "";
 		todoInput.focus();
 		updateNumberOfActive();
@@ -70,7 +68,6 @@ function addNewLi() {
 }
 
 function saveToStorage() {
-	console.log(todoList);
 	localStorage.setItem('todo', JSON.stringify(todoList));
 }
 
@@ -93,13 +90,13 @@ function initRemoveButtons() {
 function handleCheckboxCheck() {
     var toggleBtn = document.getElementsByClassName("toggle");
     for (var i = 0; i < toggleBtn.length; i++) { 
-          toggleBtn[i].onclick = function() {
+        toggleBtn[i].onclick = function() {
             var li = this.parentElement;
 			var liIndex = Array.from(li.parentNode.children).indexOf(li);
 			todoList[liIndex].isChecked = !todoList[liIndex].isChecked;
 			updateMarkup();
 			saveToStorage();
-          }
+        }
     }
 }
 
@@ -228,12 +225,10 @@ function makeEditable() {
 			
 			function onBlurFunction() {
 				var editedText = inputEditable.value;
-				currentLabel.innerText = editedText;
-				
 				var currentlyChangedLI = currentLabel.parentNode;
 				var currentlyChangedLiIndex = Array.from(currentlyChangedLI.parentNode.children).indexOf(currentlyChangedLI);
-
-				todoList[currentlyChangedLiIndex] = editedText;
+				todoList[currentlyChangedLiIndex].text = editedText;
+				updateMarkup();
 				saveToStorage();
 				
 				inputEditable.style.display = "none";
@@ -243,7 +238,8 @@ function makeEditable() {
 			inputEditable.onblur = onBlurFunction;
 
 			inputEditable.addEventListener("keydown", function (e) {
-				if (e.keyCode === 13) {  
+				if (e.keyCode === 13) { 
+					inputEditable.onblur = ""; 
 					onBlurFunction();
 				}
 			});
