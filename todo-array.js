@@ -1,8 +1,5 @@
 //TODO!!
-//when adding items checked checkboxes disappear - remember the checked state
 //inputEditable.value - not updating in storage //save edited on double click items to storage
-//store and retrieve checkbox state in localstorage
-
 
 var todoInput = document.getElementById("new-todo");
 var todoUL = document.getElementById("todo");
@@ -15,6 +12,7 @@ var tabs = document.getElementsByClassName("tablink");
 var tabAll = document.getElementById("tab-all");
 var tabActive = document.getElementById("tab-active");
 var tabCompleted = document.getElementById("tab-completed");
+var currentTab = "all";
 var clearBtn = document.querySelector(".clear-completed");
 
 if (localStorage.getItem('todo') != undefined) {
@@ -24,7 +22,6 @@ if (localStorage.getItem('todo') != undefined) {
 
 showHelpers();
 handleCheckboxCheck();
-updateNumberOfActive();
 initRemoveButtons();
 makeEditable();
 
@@ -53,10 +50,10 @@ function updateMarkup() {
 
     handleCheckboxCheck();
 	initRemoveButtons();
+	updateBasedonTab();
+	updateNumberOfActive();
 	makeEditable();
 }
-
-
 
 //takes value of todo input, adds it to array and saves in localstorage
 function addNewLi() {
@@ -87,8 +84,6 @@ function initRemoveButtons() {
 			todoList.splice(destroyedLiIndex, 1);
 			updateMarkup();
 			saveToStorage();
-
-			updateNumberOfActive();
 			showHelpers();
 		}
 	}
@@ -104,49 +99,33 @@ function handleCheckboxCheck() {
 			todoList[liIndex].isChecked = !todoList[liIndex].isChecked;
 			updateMarkup();
 			saveToStorage();
-            updateNumberOfActive();
           }
     }
 }
 
 //count and display number of active items in the footer
 function updateNumberOfActive() {
-	var numberOfCompleted = document.querySelectorAll('.completed').length;
-	var numberOfActive = listItems.length - numberOfCompleted;
+	var numberOfActive = todoList.filter(item => !item.isChecked).length;
 	var numberOfActiveText = document.getElementById("active");
 	numberOfActiveText.innerHTML = numberOfActive;
-	if (numberOfActive == 1) {
-		document.getElementById("item-text").innerHTML = "item";
-	}
-	else {
-		document.getElementById("item-text").innerHTML = "items";
-	}
+	document.getElementById("item-text").innerHTML = (numberOfActive == 1) ? "item" : "items";
 }
 
 //events of "toggle-all" button
 function allAreChecked() {
-	var allChecked = true;
-	
-	for (var i = 0; i < listItems.length; i++) {
-		if (!listItems[i].classList.contains("completed")) {
-			allChecked = false;
-		}	
-	}
-	return allChecked;
-}
-
-function uncheckAll() {
-	for (var i = 0; i < listItems.length; i++) {
-		listItems[i].classList.remove("completed");	
-	}
+	return todoList.every(item => item.isChecked);
 }
 
 function checkAll() {
-	for (var i = 0; i < listItems.length; i++) {
-		if (!listItems[i].classList.contains("completed")) {
-			listItems[i].classList.add("completed");
-		}
-	}
+	for (var item of todoList) {
+		item.isChecked = true;
+    }
+}
+
+function uncheckAll() {
+	for (var item of todoList) {
+		item.isChecked = false;
+    }
 }
 
 toggleAll.onclick = function() {
@@ -158,7 +137,8 @@ toggleAll.onclick = function() {
 		checkAll();
 		clearBtn.style.display = "block";
 	}
-	updateNumberOfActive();
+	updateMarkup();
+	saveToStorage();
 }
 
 /*footer tabs*/
@@ -170,33 +150,52 @@ function unselectOtherTabs(tab) {
 }
 
 tabAll.onclick = function() {
+	currentTab = "all";
 	unselectOtherTabs(tabAll);
-	for (var i = 0; i < listItems.length; i++) {
-		listItems[i].style.display = "block";
-	}
+	updateBasedonTab();
 }
 
 tabActive.onclick = function() {
+	currentTab = "active";
 	unselectOtherTabs(tabActive); 
-	for (var i = 0; i < listItems.length; i++) {
-		if (listItems[i].classList.contains("completed")){
-			listItems[i].style.display = "none";
-		}	
-		else {
-			listItems[i].style.display = "block";
-		}
-	}
+	updateBasedonTab();
 }
 
 tabCompleted.onclick = function() {
+	currentTab = "completed";
 	unselectOtherTabs(tabCompleted); 
-	for (var i = 0; i < listItems.length; i++) {
-		if (!listItems[i].classList.contains("completed")){
-			listItems[i].style.display = "none";
-		}	
-		else {
-			listItems[i].style.display = "block";
-		}
+	updateBasedonTab();
+}
+
+function updateBasedonTab() {
+	switch (currentTab) {
+		case "all":
+			for (var i = 0; i < listItems.length; i++) {
+				listItems[i].style.display = "block";
+			}
+			break;
+		case "active":
+			for (var i = 0; i < listItems.length; i++) {
+				if (listItems[i].classList.contains("completed")){
+					listItems[i].style.display = "none";
+				}	
+				else {
+					listItems[i].style.display = "block";
+				}
+			}
+			break;
+		case "completed":
+			for (var i = 0; i < listItems.length; i++) {
+				if (!listItems[i].classList.contains("completed")){
+					listItems[i].style.display = "none";
+				}	
+				else {
+					listItems[i].style.display = "block";
+				}
+			}
+			break;
+		default:
+			throw "Unknown tab name";
 	}
 }
 
