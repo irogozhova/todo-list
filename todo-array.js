@@ -1,3 +1,5 @@
+//TODO: remove item if it is erased when editing!
+
 var todoInput = document.getElementById("new-todo");
 var todoUL = document.getElementById("todo");
 var todoList = [];
@@ -17,24 +19,7 @@ if (localStorage.getItem('todo') != undefined) {
 	updateMarkup();
 }
 
-showHelpers();
-handleCheckboxCheck();
-initRemoveButtons();
-makeEditable();
-
-//adds new todo on enter
-todoInput.addEventListener("keydown", function(e) {
-	if (e.keyCode === 13) {  
-		addNewLi();
-		
-        todoInput.value = "";
-		todoInput.focus();
-		updateNumberOfActive();
-		showHelpers();
-	}
-});
-
-//creates new li markup
+//creates new ul markup
 function updateMarkup() {
     var out = '';
 
@@ -43,26 +28,27 @@ function updateMarkup() {
     }
 	todoUL.innerHTML = out;
 
-	var anyAreChecked = todoList.some(item => item.isChecked); //take only true/false values and check if any one is true
+	var anyAreChecked = todoList.some(item => item.isChecked); //take only true/false values and check if any one of them is true
 	clearBtn.style.display = anyAreChecked ? "block" : "none";
 
-    handleCheckboxCheck();
 	initRemoveButtons();
-	updateBasedonTab();
+    handleCheckboxCheck();
 	updateNumberOfActive();
+	updateBasedonTab();
 	makeEditable();
+	showHelpers();
 }
 
 //takes value of todo input, adds it to array and saves in localstorage
 function addNewLi() {
     var todoText = todoInput.value;
     
-    if (todoText == '') { //do nothing if the field is empty
+    if (todoText == '') { 
         return;
     }
 
 	var newItem = {text: todoText, isChecked: false};	
-	todoList.push(newItem);
+	todoList.push(newItem); //adds to the end of the array
 	updateMarkup();
 	saveToStorage();
 }
@@ -70,6 +56,15 @@ function addNewLi() {
 function saveToStorage() {
 	localStorage.setItem('todo', JSON.stringify(todoList));
 }
+
+//adds new todo on enter
+todoInput.addEventListener("keydown", function(e) {
+	if (e.keyCode === 13) {  
+		addNewLi();
+        todoInput.value = "";
+		todoInput.focus();
+	}
+});
 
 // Remove list items when clicking on destroy button
 function initRemoveButtons() {
@@ -81,7 +76,6 @@ function initRemoveButtons() {
 			todoList.splice(destroyedLiIndex, 1);
 			updateMarkup();
 			saveToStorage();
-			showHelpers();
 		}
 	}
 }
@@ -108,9 +102,9 @@ function updateNumberOfActive() {
 	document.getElementById("item-text").innerHTML = (numberOfActive == 1) ? "item" : "items";
 }
 
-//events of "toggle-all" button
+//"toggle-all" button
 function allAreChecked() {
-	return todoList.every(item => item.isChecked);
+	return todoList.every(item => item.isChecked); //returns 'true' if all are checked and 'false' otherwise
 }
 
 function checkAll() {
@@ -206,7 +200,6 @@ clearBtn.onclick = function() {
 			saveToStorage();
 		}
 	}
-	showHelpers();
 }
 
 //edit item on double click
@@ -237,7 +230,7 @@ function makeEditable() {
 			
 			inputEditable.onblur = onBlurFunction;
 
-			inputEditable.addEventListener("keydown", function (e) {
+			inputEditable.addEventListener("keydown", function(e) {
 				if (e.keyCode === 13) { 
 					inputEditable.onblur = ""; 
 					onBlurFunction();
