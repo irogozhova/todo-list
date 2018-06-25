@@ -220,10 +220,14 @@ function makeEditable() {
 				var editedText = inputEditable.value;
 				var currentlyChangedLI = currentLabel.parentNode;
 				var currentlyChangedLiIndex = Array.from(currentlyChangedLI.parentNode.children).indexOf(currentlyChangedLI);
-				todoList[currentlyChangedLiIndex].text = editedText;
+				if (!editedText) {
+					todoList.splice(currentlyChangedLiIndex, 1);		
+				}
+				else {
+					todoList[currentlyChangedLiIndex].text = editedText;
+				}
 				updateMarkup();
-				saveToStorage();
-				
+				saveToStorage();				
 				inputEditable.style.display = "none";
 				inputEditable.parentElement.querySelector(".toggle").style.display = "block";
 			}
