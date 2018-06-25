@@ -1,5 +1,3 @@
-//TODO: remove item if it is erased when editing!
-
 var todoInput = document.getElementById("new-todo");
 var todoUL = document.getElementById("todo");
 var todoList = [];
@@ -16,8 +14,9 @@ var clearBtn = document.querySelector(".clear-completed");
 
 if (localStorage.getItem('todo') != undefined) {
     todoList = JSON.parse(localStorage.getItem('todo'));
-	updateMarkup();
 }
+
+updateMarkup();
 
 //creates new ul markup
 function updateMarkup() {
