@@ -113,7 +113,8 @@ button, input {
 	left: -13px;
 	top: 13px;
 	transform: rotate(90deg);
-	-webkit-appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 	appearance: none;
 }
 
@@ -152,7 +153,8 @@ button, input {
     left: -4px;
     width: 40px;
     height: 40px;
-	-webkit-appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 	appearance: none;
 }
 
